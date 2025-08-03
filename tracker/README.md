@@ -19,6 +19,12 @@ This Django-based system allows users to subscribe to various plans and track cu
 Super User: admin
 Password: root@dmin
 
+## Rest API Information
+path('api/subscribe/', views.subscribe),
+path('api/subscriptions/', views.user_subscriptions),
+path('api/cancel/', views.cancel_subscription),
+path('api/exchange-rate/', views.exchange_rate),
+
 ---
 
 ## Project Setup Guide
