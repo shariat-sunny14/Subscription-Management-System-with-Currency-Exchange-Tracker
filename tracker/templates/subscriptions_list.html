@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card p-4">
+        <h2 class="text-center mb-4">📋 User Subscriptions</h2>
+
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr style="text-align: center;">
+              <th scope="col">Sl</th>
+              <th scope="col">Username</th>
+              <th scope="col">Plan</th>
+              <th scope="col">Start Date</th>
+              <th scope="col">End Date</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sub in subscriptions %}
+            <tr>
+              <td style="text-align: center;">{{ forloop.counter }}</td> <!-- Serial number -->
+              <td style="text-align: center;">{{ sub.user.username }}</td> <!-- User name -->
+              <td style="text-align: center;">{{ sub.plan.name }}</td> <!-- Plan name -->
+              <td style="text-align: center;">{{ sub.start_date }}</td> <!-- Start Date -->
+              <td style="text-align: center;">{{ sub.end_date }}</td> <!-- End Date -->
+              <td style="text-align: center; font-size: 1.2em;">
+                {% if sub.status == 'active' %}
+                <span class="badge badge-active" style="color: green; font-weight: bold;">Active</span>
+                {% elif sub.status == 'cancelled' %}
+                <span class="badge badge-cancelled" style="color: red; font-weight: bold;">Cancelled</span>
+                {% else %}
+                <span class="badge badge-expired" style="color: gray; font-weight: bold;">Expired</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center">No subscriptions found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

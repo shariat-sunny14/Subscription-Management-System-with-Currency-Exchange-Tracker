@@ -1,0 +1,158 @@
+{% extends 'base.html' %} {% block body %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h3 class="text-center mb-4">💱 Currency Exchange Tracker</h3>
+
+        <form id="exchange-form" class="row g-3">
+          <div class="col-md-6">
+            <label for="baseCurrency" class="form-label">Base Currency</label>
+            <select id="baseCurrency" class="form-select">
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="targetCurrency" class="form-label">Target Currency</label>
+            <select id="targetCurrency" class="form-select">
+              <option value="BDT">BDT</option>
+              <option value="INR">INR</option>
+            </select>
+          </div>
+          <div class="col-12 text-center">
+            <button type="submit" class="btn btn-primary px-4">Get Rate</button>
+          </div>
+        </form>
+
+        <div id="result-area" class="mt-4 d-none">
+          <h5 class="text-success">📈 Latest Rate:</h5>
+          <table class="table table-bordered mt-2">
+            <thead class="table-light">
+              <tr>
+                <th>Base</th>
+                <th>Target</th>
+                <th>Rate</th>
+                <th>Fetched At</th>
+              </tr>
+            </thead>
+            <tbody id="result-table"></tbody>
+          </table>
+        </div>
+
+        <div id="error-area" class="alert alert-danger mt-3 d-none" role="alert">
+          Failed to fetch exchange rate. Please try again.
+        </div>
+      </div>
+    </div>
+    <!-- Chart Container -->
+    <!--  -->
+    <div class="col-md-6">
+      <canvas id="exchangeRateChart" height="100"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS + Fetch -->
+<script>
+  let exchangeRateChart = null;
+
+  async function loadExchangeRateChart() {
+    const base = document.getElementById("baseCurrency").value;
+    const target = document.getElementById("targetCurrency").value;
+
+    if (!base || !target) return;
+
+    try {
+      const response = await fetch(
+        `/currency-exchange/api/exchange-rate-history/?base=${base}&target=${target}`
+      );
+      const data = await response.json();
+
+      const labels = data.map(entry => entry.datetime);
+      const rates = data.map(entry => entry.rate);
+
+      const ctx = document.getElementById("exchangeRateChart").getContext("2d");
+
+      // Destroy previous chart instance if it exists
+      if (exchangeRateChart) {
+        exchangeRateChart.destroy();
+      }
+
+      exchangeRateChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: `${base} to ${target}`,
+            data: rates,
+            fill: false,
+            borderColor: "blue",
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: `Exchange Rate (${base} to ${target}) - Last 7 Days`
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false
+            }
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error("Failed to load exchange rate chart:", error);
+    }
+  }
+
+  // Event listeners for dropdown changes
+  document.getElementById("baseCurrency").addEventListener("change", loadExchangeRateChart);
+  document.getElementById("targetCurrency").addEventListener("change", loadExchangeRateChart);
+
+  // Initial load
+  window.onload = loadExchangeRateChart;
+  ////////////////////////
+  document
+    .getElementById("exchange-form")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const base = document.getElementById("baseCurrency").value;
+      const target = document.getElementById("targetCurrency").value;
+      const resultArea = document.getElementById("result-area");
+      const resultTable = document.getElementById("result-table");
+      const errorArea = document.getElementById("error-area");
+
+      // Fixed URL
+      fetch(
+        `/currency-exchange/api/exchange-rate/?base=${base}&target=${target}`
+      )
+        .then((res) => {
+          if (!res.ok) throw new Error("API error");
+          return res.json();
+        })
+        .then((data) => {
+          resultArea.classList.remove("d-none");
+          errorArea.classList.add("d-none");
+          resultTable.innerHTML = `
+                    <tr>
+                        <td>${data.base}</td>
+                        <td>${data.target}</td>
+                        <td>${data.rate}</td>
+                        <td>${new Date().toLocaleString()}</td>
+                    </tr>`;
+        })
+        .catch((err) => {
+          resultArea.classList.add("d-none");
+          errorArea.classList.remove("d-none");
+        });
+    });
+</script>
+{% endblock %}

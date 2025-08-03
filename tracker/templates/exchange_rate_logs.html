@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card p-4">
+                <h2 class="text-center mb-4">💱 Exchange Rate Logs</h2>
+
+                <table class="table table-bordered table-hover bg-white">
+                    <thead class="table-light" style="text-align: center;">
+                        <tr>
+                            <th>Sl</th>
+                            <th>Base Currency</th>
+                            <th>Target Currency</th>
+                            <th>Rate</th>
+                            <th>Fetched At</th>
+                            <th>Creator</th>
+                        </tr>
+                    </thead>
+                    <tbody style="text-align: center;">
+                        {% for rate in exchange_rates %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ rate.base_currency }}</td>
+                            <td>{{ rate.target_currency }}</td>
+                            <td>{{ rate.rate }}</td>
+                            <td>{{ rate.fetched_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ rate.ss_creator.username }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No exchange rate logs found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

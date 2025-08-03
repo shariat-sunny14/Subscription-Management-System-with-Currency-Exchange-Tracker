@@ -1,0 +1,61 @@
+# for MYSQL_DATABASE
+# version: '3.9'
+
+# services:
+#   web:
+#     build: .
+#     container_name: django_app
+#     command: python app/manage.py runserver 0.0.0.0:8000
+#     volumes:
+#       - .:/app
+#     ports:
+#       - "8000:8000"
+#     env_file:
+#       - .env
+#     depends_on:
+#       - db
+#       - redis
+
+#   db:
+#     image: mysql:8.0
+#     container_name: mysql_db
+#     restart: always
+#     env_file:
+#       - .env
+#     environment:
+#       MYSQL_DATABASE: ${MYSQL_DATABASE}
+#       MYSQL_USER: ${MYSQL_USER}
+#       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+#       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - db_data:/var/lib/mysql
+
+#   redis:
+#     image: redis:alpine
+#     container_name: redis_cache
+#     ports:
+#       - "6379:6379"
+#     volumes:
+#       - redis_data:/data
+
+# volumes:
+#   db_data:
+#   redis_data:
+
+
+
+# for sqlite
+version: '3.9'
+
+services:
+  web:
+    build: .
+    container_name: django_sqlite_app
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
